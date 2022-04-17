@@ -18,6 +18,7 @@ export default function PokemonList(props) {
   );
 }
 
+//Estilos
 const styles = StyleSheet.create({
   flatListContentContainer: {
     paddingHorizontal: 5,
