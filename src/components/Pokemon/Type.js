@@ -30,7 +30,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   pills: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
+    marginHorizontal: 5,
     paddingVertical: 5,
     borderRadius: 20,
   },
