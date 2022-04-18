@@ -1,9 +1,8 @@
-import { View, Text } from "react-native";
+import { ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
 import { getUniquePokemonDetailApi } from "../api/pokemon";
 
-//import de lodash para CammelCase
-import { capitalize } from "lodash";
+import Header from "../components/Pokemon/Header";
 
 export default function PokemonScreen(props) {
   const { navigation, route } = props;
@@ -27,9 +26,13 @@ export default function PokemonScreen(props) {
   if (!pokemon) return null;
 
   return (
-    <View>
-      <Text>Estamos en un pokemon</Text>
-      <Text>{capitalize(pokemon.name)}</Text>
-    </View>
+    <ScrollView>
+      <Header
+        name={pokemon.name}
+        order={pokemon.order}
+        image={pokemon.sprites.other["official-artwork"].front_default}
+        type={pokemon.types[0].type.name}
+      />
+    </ScrollView>
   );
 }
