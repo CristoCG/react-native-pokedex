@@ -26,7 +26,7 @@ export default function PokemonCard(props) {
 
   //Función que se ejecuta al presionar sobre un pokemón
   const goToPokemon = () => {
-    //console.log( pokemon.id);
+  
     navigation.navigate("Pokemon", { id: pokemon.id });
   };
 
