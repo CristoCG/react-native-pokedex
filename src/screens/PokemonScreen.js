@@ -4,6 +4,7 @@ import { getUniquePokemonDetailApi } from "../api/pokemon";
 
 import Header from "../components/Pokemon/Header";
 import Type from "../components/Pokemon/Type";
+import Stats from "../components/Pokemon/Stats";
 
 export default function PokemonScreen(props) {
   const { navigation, route } = props;
@@ -34,6 +35,7 @@ export default function PokemonScreen(props) {
         type={pokemon.types[0].type.name}
       />
       <Type types={pokemon.types} />
+      <Stats stats={pokemon.stats} />
     </ScrollView>
   );
 }
