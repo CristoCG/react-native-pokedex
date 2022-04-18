@@ -26,3 +26,17 @@ export async function getPokemonDetailsApi(url) {
     throw error;
   }
 }
+
+//Obtener informacion de un solo pokemon
+
+export async function getUniquePokemonDetailApi(id) {
+  try {
+    const url = `${API_HOST}/pokemon/${id}`
+    const response = await fetch(url)
+    const result = await response.json()
+    
+    return result
+  } catch (error) {
+    throw error
+  }
+}
