@@ -4,11 +4,12 @@ import { FlatList, StyleSheet, ActivityIndicator } from "react-native";
 import PokemonCard from "./PokemonCard";
 
 export default function PokemonList(props) {
-  const { pokemons } = props;
+  const { pokemons, loadPokemons, isNext } = props;
 
   //Función para hacer infinity scroll
   const loadMore = () => {
     console.log("Cargando más pokemons!...");
+    loadPokemons();
   };
   return (
     <>
@@ -19,13 +20,19 @@ export default function PokemonList(props) {
         keyExtractor={(pokemon) => String(pokemon.id)}
         renderItem={({ item }) => <PokemonCard pokemon={item} />}
         contentContainerStyle={styles.flatListContentContainer}
-        //Empieza el infinity scroll
-        onEndReached={loadMore}
+        //Empieza el infinity scroll y se termina cuando llego al final si isNext == null
+        onEndReached={isNext && loadMore}
         //Empieza a cargar antes de que se llegue al final
         onEndReachedThreshold={0.1}
-        //Spinner para cuando esté cargando
+        //Spinner para cuando esté cargando y todavia tenga datos que renderizar
         ListFooterComponent={
-          <ActivityIndicator size="large" style={styles.spinner} />
+          isNext && (
+            <ActivityIndicator
+              size="large"
+              color="AEAEAE"
+              style={styles.spinner}
+            />
+          )
         }
       />
     </>

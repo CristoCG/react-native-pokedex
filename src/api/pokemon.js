@@ -1,10 +1,11 @@
 import { API_HOST } from "../utils/constants";
 
-export async function getPokemonsApi() {
+export async function getPokemonsApi(endPointUrl) {
   try {
     const url = `${API_HOST}/pokemon?limit=20&offset=0`;
 
-    const response = await fetch(url);
+    //Si se pidió cargar más datos los coge como endpoint sino la url declarada arriba
+    const response = await fetch(endPointUrl || url);
 
     const result = await response.json();
 
@@ -16,8 +17,8 @@ export async function getPokemonsApi() {
 
 export async function getPokemonDetailsApi(url) {
   try {
-      const response = await fetch(url);
-      
+    const response = await fetch(url);
+
     const result = await response.json();
 
     return result;
