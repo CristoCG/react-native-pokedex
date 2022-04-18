@@ -7,15 +7,16 @@ import {
   StyleSheet,
 } from "react-native";
 
+import { useNavigation } from "@react-navigation/native";
+
 //import de lodash para CammelCase
-import {capitalize} from "lodash"
+import { capitalize } from "lodash";
 
 import getColorByPokemonType from "../utils/getColorByPokemonType";
 
-
-
 export default function PokemonCard(props) {
   const { pokemon } = props;
+  const navigation = useNavigation();
 
   //Extraer el string del color
   const pokemonColor = getColorByPokemonType(pokemon.type);
@@ -25,7 +26,8 @@ export default function PokemonCard(props) {
 
   //Función que se ejecuta al presionar sobre un pokemón
   const goToPokemon = () => {
-    console.log(`Ver info de pokemon: ${pokemon.name}`);
+    //console.log( pokemon.id);
+    navigation.navigate("Pokemon", { id: pokemon.id });
   };
 
   return (
@@ -43,7 +45,7 @@ export default function PokemonCard(props) {
   );
 }
 
-//Estilos 
+//Estilos
 const styles = StyleSheet.create({
   card: {
     flex: 1,
