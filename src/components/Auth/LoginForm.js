@@ -1,189 +1,117 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
+  StyleSheet,
   View,
   Text,
   TextInput,
-  StyleSheet,
   TouchableOpacity,
-  Alert,
-  ScrollView,
 } from "react-native";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { user, userDetails } from "../../utils/userDB";
+import useAuth from "../../hooks/useAuth";
 
-//import navigation
-import { useNavigation } from "@react-navigation/native";
+export default function LoginForm() {
+  const [error, setError] = useState("");
+  const { login } = useAuth();
 
-//import de para firebase
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
+  const formik = useFormik({
+    initialValues: initialValues(),
+    validationSchema: Yup.object(validationSchema()),
+    validateOnChange: false,
+    onSubmit: (formValue) => {
+      setError("");
+      const { username, password } = formValue;
 
-import { initializeApp } from "firebase/app";
+      if (username !== user.username || password !== user.password) {
+        setError("El usuario o la contraseña no son correcto");
+      } else {
+        login(userDetails);
+      }
+    },
+  });
 
-import { firebaseConfig } from "../firebase/firebaseConfig";
-
-import {} from "firebase/firebase-app";
-
-//import del hook useAuth
-import { useAuth } from "../../hooks/useAuth";
-
-export default function AccountScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  const user = useAuth(auth);
-
-  //Para el navigation
-  const navigation = useNavigation();
-
-  //Creacion de la cuenta al darle al botón
-  const handleCreateAccount = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        console.log("Cuenta creada!");
-        const user = userCredential.user;
-        console.log(user);
-        Alert.alert(
-          "No se te olvide verificar tu correo para crear la cuenta!\n :)"
-        );
-        navigation.navigate("Profile");
-      })
-      .catch((error) => {
-        console.log(error);
-        Alert.alert("Se produjo un error: ", error.message);
-      });
-  };
-
-  //Verificar que si existe la cuenta
-  const handleSignIn = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        console.log("Se entró en la cuenta!");
-        const user = userCredential.user;
-        console.log(user);
-        navigation.navigate("Profile");
-      })
-      .catch((error) => {
-        console.log(error);
-        Alert.alert("Se produjo un error: ", error.message);
-      });
-  };
-
-  //Logout
-  const logOut = () => {
-    signOut().then(() => {
-      Alert.alert("Cerraste sesión correctamente.");
-    });
-  };
   return (
-    <>
-      {user ? (
-        <View style={styles.container}>
-          <ScrollView contentContainerStyle={styles.scroll}>
-            <View>
-              <View style={styles.login}>
-                <View>
-                  <Text style={styles.label}>E-mail: </Text>
-                  <TextInput
-                    onChangeText={(text) => setEmail(text)}
-                    style={styles.input}
-                    keyboardType="email-address"
-                    placeholder="Email..."
-                    autoCapitalize="none"
-                  />
-                </View>
-                <View>
-                  <Text style={styles.label}>Password: </Text>
-                  <TextInput
-                    onChangeText={(text) => setPassword(text)}
-                    style={styles.input}
-                    placeholder="Password..."
-                    secureTextEntry={true}
-                    autoCapitalize="none"
-                  />
-                </View>
-                <TouchableOpacity
-                  onPress={handleSignIn}
-                  style={[styles.button, { backgroundColor: "#00CFEB90" }]}
-                >
-                  <Text style={styles.label}>Login</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleCreateAccount}
-                  style={[styles.button, { backgroundColor: "#6792F090" }]}
-                >
-                  <Text style={styles.label}>Create Account</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </ScrollView>
+    <View>
+      <Text style={styles.title}>Iniciar sesión</Text>
+      <TextInput
+        placeholder="Nombre de usuario"
+        style={styles.input}
+        autoCapitalize="none"
+        value={formik.values.username}
+        onChangeText={(text) => formik.setFieldValue("username", text)}
+      />
+      <TextInput
+        placeholder="Contraseña"
+        style={styles.input}
+        autoCapitalize="none"
+        secureTextEntry={true}
+        value={formik.values.password}
+        onChangeText={(text) => formik.setFieldValue("password", text)}
+      />
+
+      <View style={styles.buttonView} >
+      <TouchableOpacity onPress={formik.handleSubmit}>
+        <View style={styles.button}>
+          <Text>Entrar</Text>
         </View>
-      ) : (
-        navigation.navigate("Profile")
-      )}
-    </>
+      </TouchableOpacity>
+      </View>
+      
+
+      <Text style={styles.error}>{formik.errors.username}</Text>
+      <Text style={styles.error}>{formik.errors.password}</Text>
+
+      <Text style={styles.error}>{error}</Text>
+    </View>
   );
 }
 
+function initialValues() {
+  return {
+    username: "",
+    password: "",
+  };
+}
+
+function validationSchema() {
+  return {
+    username: Yup.string().required("El usuario es obligatorio"),
+    password: Yup.string().required("La contraseña es obligatoria"),
+  };
+}
+
 const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  labelContainer: {
-    flexDirection: "column",
-    padding: 2,
-    justifyContent: "flex-start",
-  },
-  label: {
-    fontSize: 17,
-    fontWeight: "400",
-    color: "#000",
+  title: {
+    textAlign: "center",
+    fontSize: 28,
+    fontWeight: "bold",
+    marginTop: 50,
+    marginBottom: 15,
   },
   input: {
-    width: 250,
     height: 40,
-    borderColor: "#fff",
+    margin: 12,
     borderWidth: 1,
-    borderRadius: 10,
     padding: 10,
-    marginVertical: 10,
-    backgroundColor: "#ffffff90",
-    marginBottom: 20,
+    borderRadius: 10,
   },
+  error: {
+    textAlign: "center",
+    color: "#f00",
+    marginTop: 20,
+  },
+  buttonView: {
+ 
+    alignSelf:"center"
 
-  login: {
-    width: 350,
-    height: 500,
-    borderColor: "#fff",
-    borderWidth: 2,
-    borderRadius: 10,
-    padding: 10,
-    alignItems: "center",
-    paddingTop: 90,
   },
   button: {
-    width: 250,
-    height: 40,
-    borderRadius: 10,
-    alignItems: "center",
+    backgroundColor: "#CFCFCF",
+    width: 60,
+    borderRadius: 333,
+    padding: 10,
     justifyContent: "center",
-    marginVertical: 10,
-    borderColor: "#fff",
-    borderWidth: 1,
+    marginHorizontal: 50,
   },
 });
